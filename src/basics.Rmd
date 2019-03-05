@@ -5,6 +5,10 @@ date: "3/4/2019"
 output: powerpoint_presentation
 ---
 
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+```
+
 ### Introduction
 
 * Keep things simple
@@ -17,26 +21,84 @@ output: powerpoint_presentation
   + Detrending and deseasonalizing
   + Basic Box-Jenkins models
   
+### White noise
+
+```{r white-noise}
+set.seed(23571113)
+plot(rnorm(100), type="l")
+```
+
 ### Structure
 
 The base R package has an object class, ts. You can specify three parameters: start, stop, and frequency. 
 
+### UKgas
+
+```{r UKgas, echo=TRUE}
+str(UKgas)
+attributes(UKgas)
+```
+
+### Plot UKGas
+
+```{r UKgas-plot}
+plot(UKgas)
+```
+
 ### Structure of co2 data
 
-```{r co2}
+```{r co2, echo=TRUE}
 str(co2)
 attributes(co2)
 ```
 
 ### Plot of co2 data
 
-```{r co2-plot, echo=FALSE}
+```{r co2-plot}
 plot(co2)
+```
+
+### Decomposition of co2
+
+```{r co2-decomp, echo=TRUE}
+co2_d <- decompose(co2)
+str(co2_d)
+```
+
+### Plot of co2 decomposition
+
+```{r co2-decomp-plot}
+plot(co2_d)
+```
+
+### UKgas decomposition
+
+```{r UKgas-decomp, echo=TRUE}
+UKgas_d <- decompose(UKgas, type="multiplicative")
+str(UKgas_d)
+```
+
+### Plot of UKgas decomposition
+
+```{r UKgas-decomp-plot}
+plot(UKgas_d)
+```
+
+### Autocorrelations of co2 data
+
+```{r co2-auto}
+acf(co2)
+```
+
+### Partial autocorrelations of co2 data
+
+```{r co2-pacf}
+pacf(co2)
 ```
 
 ### Structure of LakeHuron data
 
-```{r LakeHuron}
+```{r LakeHuron, echo=TRUE}
 str(LakeHuron)
 attributes(LakeHuron)
 ```
@@ -49,7 +111,7 @@ plot(LakeHuron)
 
 ### Structure of mdeaths data
 
-```{r mdeaths}
+```{r mdeaths, echo=TRUE}
 str(mdeaths)
 attributes(mdeaths)
 ```
@@ -62,33 +124,33 @@ plot(mdeaths)
 
 ### Structure of Nile data
 
-```{r Nile}
+```{r Nile, echo=TRUE}
 str(Nile)
 attributes(Nile)
 ```
 
 ### Plot of Nile data
 
-```{r Nile-plot, echo=FALSE}
+```{r Nile-plot}
 plot(Nile)
 ```
 
 ### Structure of nottem
 
-```{r nottem}
+```{r nottem, echo=TRUE}
 str(nottem)
 attributes(nottem)
 ```
 
 ### Plot of nottem
 
-```{r nottem-plot, echo=FALSE}
+```{r nottem-plot}
 plot(nottem)
 ```
 
 ### Structure of sunspot.year
 
-```{r sunspot}
+```{r sunspot, echo=TRUE}
 str(sunspot.year)
 attributes(sunspot.year)
 ```
@@ -101,27 +163,33 @@ plot(sunspot.year)
 
 ### Structure of treering
 
-```{r treering}
+```{r treering, echo=TRUE}
 str(treering)
 attributes(treering)
 ```
 
 ### Plot of treering
 
-```{r treering-plot, echo=FALSE}
+```{r treering-plot}
 plot(treering)
 ```
 
-### UK time series
+### UKDriverDeaths
 
-```{r UK}
+```{r UK, echo=TRUE}
 str(UKDriverDeaths)
-str(UKgas)
+attributes(UKDriverDeaths)
 ```
 
-### US time series
+### Plot UKDriver Deaths
 
-```{r US}
+```{r UKDriverDeaths-plot}
+plot(UKDriverDeaths)
+```
+
+### USAccDeaths
+
+```{r US, echo=TRUE}
 str(USAccDeaths)
 attributes(USAccDeaths)
 ```
@@ -129,4 +197,5 @@ attributes(USAccDeaths)
 ### USAccDeaths plot
 
 ```{r USAccDeaths-plot, echo=FALSE}
-plot()
+plot(USAccDeaths)
+```
