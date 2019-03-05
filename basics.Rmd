@@ -1,0 +1,132 @@
+---
+title: "Basic time series"
+author: "Steve Simon"
+date: "3/4/2019"
+output: powerpoint_presentation
+---
+
+### Introduction
+
+* Keep things simple
+  + Evenly spaced
+  + No gaps
+  + Single series
+* Topics covered
+  + Structure
+  + Plotting
+  + Detrending and deseasonalizing
+  + Basic Box-Jenkins models
+  
+### Structure
+
+The base R package has an object class, ts. You can specify three parameters: start, stop, and frequency. 
+
+### Structure of co2 data
+
+```{r co2}
+str(co2)
+attributes(co2)
+```
+
+### Plot of co2 data
+
+```{r co2-plot, echo=FALSE}
+plot(co2)
+```
+
+### Structure of LakeHuron data
+
+```{r LakeHuron}
+str(LakeHuron)
+attributes(LakeHuron)
+```
+
+### Plot of LakeHuron data
+
+```{r LakeHuron-plot}
+plot(LakeHuron)
+```
+
+### Structure of mdeaths data
+
+```{r mdeaths}
+str(mdeaths)
+attributes(mdeaths)
+```
+
+### Plot of mdeaths
+
+```{r mdeaths-plot}
+plot(mdeaths)
+```
+
+### Structure of Nile data
+
+```{r Nile}
+str(Nile)
+attributes(Nile)
+```
+
+### Plot of Nile data
+
+```{r Nile-plot, echo=FALSE}
+plot(Nile)
+```
+
+### Structure of nottem
+
+```{r nottem}
+str(nottem)
+attributes(nottem)
+```
+
+### Plot of nottem
+
+```{r nottem-plot, echo=FALSE}
+plot(nottem)
+```
+
+### Structure of sunspot.year
+
+```{r sunspot}
+str(sunspot.year)
+attributes(sunspot.year)
+```
+
+### Plot of sunspot.year
+
+```{r sunspot-plot}
+plot(sunspot.year)
+```
+
+### Structure of treering
+
+```{r treering}
+str(treering)
+attributes(treering)
+```
+
+### Plot of treering
+
+```{r treering-plot, echo=FALSE}
+plot(treering)
+```
+
+### UK time series
+
+```{r UK}
+str(UKDriverDeaths)
+str(UKgas)
+```
+
+### US time series
+
+```{r US}
+str(USAccDeaths)
+attributes(USAccDeaths)
+```
+
+### USAccDeaths plot
+
+```{r USAccDeaths-plot, echo=FALSE}
+plot()
