@@ -30,20 +30,9 @@ plot(rnorm(100), type="l")
 
 ### Structure
 
-The base R package has an object class, ts. You can specify three parameters: start, stop, and frequency. 
+The base R package has an object class, ts. You can specify three parameters: start, stop, and frequency. You do not need to place your data in a ts object before running time series analyses. 
 
-### UKgas
-
-```{r UKgas, echo=TRUE}
-str(UKgas)
-attributes(UKgas)
-```
-
-### Plot UKGas
-
-```{r UKgas-plot}
-plot(UKgas)
-```
+There is a new class, tsibble, that I have not had a chance to work with. It is based on the principles of tidy data. Read the [tsibble vignette](https://cran.rstudio.com/web/packages/tsibble/vignettes/intro-tsibble.html) for more information.
 
 ### Structure of co2 data
 
@@ -55,8 +44,15 @@ attributes(co2)
 ### Plot of co2 data
 
 ```{r co2-plot}
+fn <- "../images/co2_1.png"
+png(fn)
 plot(co2)
+# storing the results in tmp prevents
+# printing a stray message on your slides.
+tmp <- dev.off()
 ```
+
+![](../images/co2_1.png)
 
 ### Decomposition of co2
 
@@ -69,6 +65,19 @@ str(co2_d)
 
 ```{r co2-decomp-plot}
 plot(co2_d)
+```
+
+### UKgas
+
+```{r UKgas, echo=TRUE}
+str(UKgas)
+attributes(UKgas)
+```
+
+### Plot UKGas
+
+```{r UKgas-plot}
+plot(UKgas)
 ```
 
 ### UKgas decomposition
@@ -84,16 +93,55 @@ str(UKgas_d)
 plot(UKgas_d)
 ```
 
-### Autocorrelations of co2 data
+### Autoregressive
 
-```{r co2-auto}
-acf(co2)
+$Z_t=\phi Z_{t-1} + \epsilon_t$
+
+$Z_t=\phi^2 Z_{t-2}+\phi \epsilon_{t-1} + \epsilon_t$
+
+$Z_t=\phi^3 Z_{t-3}  + \phi^2 \epsilon_{t-2} + \phi \epsilon_{t-1} + \epsilon_t$
+
+### Positive autocorrelation
+
+```{r pos}
+set.seed(23571113)
+x <- arima.sim(n = 100, list(ar=0.8, ma=0))
+attributes(x) <- NULL
+plot(x)
 ```
 
-### Partial autocorrelations of co2 data
+### Lag plot
 
-```{r co2-pacf}
-pacf(co2)
+```{r diff-pos, fig.width=5, fig.height=5}
+lag.plot(x, pty="s", do.lines=FALSE, labels=FALSE)
+```
+
+### Negative autocorrelation
+
+```{r neg}
+set.seed(23571113)
+x <- arima.sim(n = 100, list(ar=-0.8, ma=0))
+plot(x)
+```
+
+### Lag plot
+
+```{r diff-neg, fig.width=5, fig.height=5}
+lag.plot(x, pty="s", do.lines=FALSE, labels=FALSE)
+```
+
+### Lag plot
+
+```{r lag2, fig.width=5, fig.height=5}
+lag.plot(x, pty="s", do.lines=FALSE, labels=FALSE, set.lags=2)
+```
+
+### acf and pacf for co2 data
+
+```{r co2-auto}
+par(mfrow=c(1, 2))
+acf(co2_d$random, na.action=na.omit)
+pacf(co2_d$random, na.action=na.omit)
 ```
 
 ### Structure of LakeHuron data
@@ -107,6 +155,14 @@ attributes(LakeHuron)
 
 ```{r LakeHuron-plot}
 plot(LakeHuron)
+```
+
+### acf and pacf for data
+
+```{r LakeHuron-auto}
+par(mfrow=c(1, 2))
+acf(LakeHuron, na.action=na.omit)
+pacf(LakeHuron, na.action=na.omit)
 ```
 
 ### Structure of mdeaths data
@@ -199,3 +255,11 @@ attributes(USAccDeaths)
 ```{r USAccDeaths-plot, echo=FALSE}
 plot(USAccDeaths)
 ```
+
+### arima.sim
+
+```{r arima.sim}
+plot(arima.sim(n = 63, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
+          sd = sqrt(0.1796)))
+```
+
