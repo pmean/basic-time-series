@@ -101,6 +101,21 @@ $Z_t=\phi^2 Z_{t-2}+\phi \epsilon_{t-1} + \epsilon_t$
 
 $Z_t=\phi^3 Z_{t-3}  + \phi^2 \epsilon_{t-2} + \phi \epsilon_{t-1} + \epsilon_t$
 
+### Correlation matrix
+
+\[
+ \begin{matrix}
+  1 & \phi & \phi^2 & \phi^3 & \cdots & \phi^{n-2} & \phi^{n-1} \\
+  \phi & 1 & \phi & \phi^2 & \cdots & \phi^{n-3} & \phi^{n-2} \\
+  \phi^2 & \phi & 1 & \phi & \cdots & \phi^{n-4} & \phi^{n-3} \\
+  \phi^3 & \phi^2 & \phi & 1 & \cdots & \phi^{n-5} & \phi^{n-4} \\
+  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+  \phi^{n-2} & \phi^{n-3} & \phi^{n-4} & \phi^{n-5} & \cdots & 1 & \phi \\ 
+  \phi^{n-1} & \phi^{n-2} & \phi^{n-3} & \phi^{n-4} & \cdots & \phi
+& 1 
+ \end{matrix}
+\]
+
 ### Positive autocorrelation
 
 ```{r pos}
