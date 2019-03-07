@@ -28,6 +28,22 @@ set.seed(23571113)
 plot(rnorm(100), type="l")
 ```
 
+### Correlation matrix
+
+\[
+ \begin{matrix}
+  1 & 0 & 0 & 0 & \cdots & 0 & 0 \\
+  0 & 1 & 0 & 0 & \cdots & 0 & 0 \\
+  0 & 0 & 1 & 0 & \cdots & 0 & 0 \\
+  0 & 0 & 0 & 1 & \cdots & 0 & 0 \\
+  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+  0 & 0 & 0 & 0 & \cdots & 1 & 0 \\ 
+  0 & 0 & 0 & 0 & \cdots & 0 & 1 
+ \end{matrix}
+\]
+
+
+
 ### Structure
 
 The base R package has an object class, ts. You can specify three parameters: start, stop, and frequency. You do not need to place your data in a ts object before running time series analyses. 
