@@ -3,10 +3,15 @@ title: "Basic time series"
 author: "Steve Simon"
 date: "3/4/2019"
 output: powerpoint_presentation
+header-includes :
+- \ usepackage { amsmath }
+- \ usepackage { mathtools }
 ---
 
 ```{r setup, echo=FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(echo=FALSE, fig.width=9)
+n_sim <- 1000
+r <- 0.5
 ```
 
 ### Introduction
@@ -14,7 +19,7 @@ knitr::opts_chunk$set(echo=FALSE)
 * Keep things simple
   + Evenly spaced
   + No gaps
-  + Single series
+  + Single long series
 * Topics covered
   + Structure
   + Plotting
@@ -50,19 +55,25 @@ $D_t = Y_t - Y_{t-s}$
 
 ### Models for the random component
 
-* White noise
+White noise
 
-$Z_t = \epsilon_t$
+* $Z_t = \epsilon_t$
 
-* Autoregressive (AR)
+Autoregressive (AR)
 
-$Z_t = \epsilon_t + \phi Z_{t-1}$
+* $Z_t = \epsilon_t + \phi Z_{t-1}$
 
-* Moving average (MA)
+Moving average (MA)
 
-$Z_t = \epsilon_t+\theta \epsilon_{t-1}$
+* $Z_t = \epsilon_t+\theta \epsilon_{t-1}$
 
+### Autocorrelation and partial autocorrelation
 
+* acf function
+  + Plots corr($Z_t,Z_{t-k}$) for k=1, 2, ...
+
+* pacf function
+  + Plots corr($Z_t,Z_{t-k}|Z_{t-1},...,Z_{t-k+1}$) for k=2, 3, ...
 
 ### Structure
 
@@ -80,17 +91,8 @@ attributes(co2)
 ### Plot of co2 data
 
 ```{r co2-plot}
-fn <- "../images/co2_1.png"
-png(fn)
 plot(co2)
-# storing the results in tmp prevents
-# printing a stray message on your slides.
-tmp <- dev.off()
 ```
-
-![](../images/co2_1.png)
-
-
 
 ### Decomposition of co2
 
@@ -121,7 +123,6 @@ plot(diff(co2, lag=1))
 
 ```{r co2-both}
 plot(diff(diff(co2, lag=12), lag=1))
-diff(diff(co2, lag=12), lag=1) - diff(diff(co2, lag=1), lag=12)
 ```
 
 
@@ -132,16 +133,22 @@ str(UKgas)
 attributes(UKgas)
 ```
 
-### Plot UKGas
+### Plot UKgas
 
 ```{r UKgas-plot}
 plot(UKgas)
 ```
 
+### Plot UKgas on a log scale
+
+```{r UKgas-log}
+plot(log(UKgas))
+```
+
 ### UKgas decomposition
 
 ```{r UKgas-decomp, echo=TRUE}
-UKgas_d <- decompose(UKgas, type="multiplicative")
+UKgas_d <- decompose(log(UKgas))
 str(UKgas_d)
 ```
 
@@ -151,94 +158,194 @@ str(UKgas_d)
 plot(UKgas_d)
 ```
 
+### Plot ofUKgas difference model
+
+```{r UKgas-diff}
+plot(diff(diff(log(UKgas), lag=4), lag=1))
+```
+
 ### White noise
+
+* $Z_t = \epsilon_t$
+* Ideal pattern
+  + Nothing left to predict
+  + Any deviation from white noise is an opportunity
+
+### A simulation of white noise
 
 ```{r white-noise}
 set.seed(23571113)
-plot(rnorm(100), type="l")
+white_noise <- arima.sim(n=n_sim, list())
+plot(white_noise, type="l")
 ```
 
-### Correlation matrix
+### Theoretical correlation matrix for white noise
 
-$Z_t = \epsilon_t$
+```{r identity}
+m <- diag(6)
+m
+```
 
-\[
- \begin{matrix}
-  1 & 0 & 0 & 0 & \cdots & 0 & 0 \\
-  0 & 1 & 0 & 0 & \cdots & 0 & 0 \\
-  0 & 0 & 1 & 0 & \cdots & 0 & 0 \\
-  0 & 0 & 0 & 1 & \cdots & 0 & 0 \\
-  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
-  0 & 0 & 0 & 0 & \cdots & 1 & 0 \\ 
-  0 & 0 & 0 & 0 & \cdots & 0 & 1 
- \end{matrix}
-\]
+### Autoregressive model
 
+ARIMA(1, 0, 0)
 
-### Autoregressive
+* $Z_t=\phi Z_{t-1} + \epsilon_t$
 
-$Z_t=\phi Z_{t-1} + \epsilon_t$
+The autoregressive model produces a "ripple effect" because this model implies a relationship going back in time.
 
-$Z_t=\phi^2 Z_{t-2}+\phi \epsilon_{t-1} + \epsilon_t$
+* $Z_t=\phi^2 Z_{t-2}+\phi \epsilon_{t-1} + \epsilon_t$
 
-$Z_t=\phi^3 Z_{t-3}  + \phi^2 \epsilon_{t-2} + \phi \epsilon_{t-1} + \epsilon_t$
+and $Z_{t-3}$
 
-### Correlation matrix
+* $Z_t=\phi^3 Z_{t-3}  + \phi^2 \epsilon_{t-2} + \phi \epsilon_{t-1.000} + \epsilon_t$
 
-\[
- \begin{matrix}
-  1 & \phi & \phi^2 & \phi^3 & \cdots & \phi^{n-2} & \phi^{n-1} \\
-  \phi & 1 & \phi & \phi^2 & \cdots & \phi^{n-3} & \phi^{n-2} \\
-  \phi^2 & \phi & 1 & \phi & \cdots & \phi^{n-4} & \phi^{n-3} \\
-  \phi^3 & \phi^2 & \phi & 1 & \cdots & \phi^{n-5} & \phi^{n-4} \\
-  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
-  \phi^{n-2} & \phi^{n-3} & \phi^{n-4} & \phi^{n-5} & \cdots & 1 & \phi \\ 
-  \phi^{n-1} & \phi^{n-2} & \phi^{n-3} & \phi^{n-4} & \cdots & \phi
-& 1 
- \end{matrix}
-\]
+and so on.
 
-### Positive autocorrelation
+### Theoretical correlation matrix for positive autoregessive model
 
-```{r pos}
+```{r pos-ar-corr}
+m <- matrix(0, nrow=6, ncol=6)
+for (i in 1:6) {for (j in 1:6) {m[i,j] <- r**abs(i-j)}}
+round(m, 3)
+```
+
+### A simulation of a positive autoregressive model
+
+```{r pos-ar-sim}
 set.seed(23571113)
-x <- arima.sim(n = 100, list(ar=0.8, ma=0))
-attributes(x) <- NULL
-plot(x)
+pos_ar_sim <- arima.sim(n=n_sim, list(ar=r))
+par(mfrow=c(2, 1), mar=c(0, 0, 2.6, 0))
+plot(pos_ar_sim, main="Positive autoregressive time series", axes=FALSE)
+plot(white_noise, main="White noise", axes=FALSE)
 ```
 
-### Lag plot
+### Auotcorrelation patterns for positive autoregressive model
 
-```{r diff-pos, fig.width=5, fig.height=5}
-lag.plot(x, pty="s", do.lines=FALSE, labels=FALSE)
+```{r pos-ar-acf}
+par(mfrow=c(1, 2))
+acf(pos_ar_sim, na.action=na.omit, main="acf(pos_ar_sim)")
+pacf(pos_ar_sim, na.action=na.omit, main="pacf(pos_ar_sim)")
 ```
 
-### Negative autocorrelation
+### Theoretical correlation matrix for negative autoregessive model
 
-```{r neg}
+```{r neg-ar-corr}
+m <- matrix(0, nrow=6, ncol=6)
+for (i in 1:6) {for (j in 1:6) {m[i,j] <- (-r)**abs(i-j)}}
+round(m, 3)
+```
+
+### A simulation of a negative autoregressive model
+
+```{r neg-ar-sim}
 set.seed(23571113)
-x <- arima.sim(n = 100, list(ar=-0.8, ma=0))
-plot(x)
+neg_ar_sim <- arima.sim(n=n_sim, list(ar=-r))
+par(mfrow=c(2, 1), mar=c(0, 0, 2.6, 0))
+plot(neg_ar_sim, main="Negative autoregressive time series", axes=FALSE)
+plot(white_noise, main="White noise", axes=FALSE)
 ```
 
-### Lag plot
+### Auotcorrelation patterns for negative autoregressive model
 
-```{r diff-neg, fig.width=5, fig.height=5}
-lag.plot(x, pty="s", do.lines=FALSE, labels=FALSE)
+```{r neg-ar-acf}
+par(mfrow=c(1, 2))
+acf(neg_ar_sim, na.action=na.omit, main="acf(neg_ar_sim)")
+pacf(neg_ar_sim, na.action=na.omit, main="pacf(neg_ar_sim)")
 ```
 
-### Lag plot
+### Moving average model
 
-```{r lag2, fig.width=5, fig.height=5}
-lag.plot(x, pty="s", do.lines=FALSE, labels=FALSE, set.lags=2)
+ARIMA(0, 0, 1)
+
+* $Z_t = \theta \epsilon_{t-1} + \epsilon_t$
+
+There is no "ripple effect" with a moving average model.
+
+### Theoretical correlation matrix for positive moving average model
+
+```{r pos-ma-corr}
+m <- diag(6)
+for (i in 1:5) {
+  m[i, i+1] <- r
+  m[i+1, i] <- r
+}
+round(m, 1)
 ```
+
+### A simulation of a positive moving average model
+
+```{r pos-ma-sim}
+set.seed(23571113)
+pos_ma_sim <- arima.sim(n=n_sim, list(ma=r))
+par(mfrow=c(2, 1), mar=c(0, 0, 2.6, 0))
+plot(pos_ma_sim, main="Positive moving average time series", axes=FALSE)
+plot(white_noise, main="White noise", axes=FALSE)
+```
+
+### Auotcorrelation patterns for positive moving average model
+
+```{r pos-ma-acf}
+par(mfrow=c(1, 2))
+acf(pos_ma_sim, na.action=na.omit, main="acf(pos_ma_sim)")
+pacf(pos_ma_sim, na.action=na.omit, main="pacf(pos_ma_sim)")
+```
+
+### Theoretical correlation matrix for negative moving average model
+
+```{r neg-ma-corr}
+m <- diag(6)
+for (i in 1:5) {
+  m[i, i+1] <- -r
+  m[i+1, i] <- -r
+}
+round(m, 1)
+```
+
+### A simulation of a negative moving average model
+
+```{r neg-ma-sim}
+set.seed(23571113)
+neg_ma_sim <- arima.sim(n=n_sim, list(ma=-r))
+par(mfrow=c(2, 1), mar=c(0, 0, 2.6, 0))
+plot(neg_ma_sim, main="Negative moving average time series", axes=FALSE)
+plot(white_noise, main="White noise", axes=FALSE)
+
+```
+
+### Auotcorrelation patterns for positive moving average model
+
+```{r neg-ma-acf}
+par(mfrow=c(1, 2))
+acf(neg_ma_sim, na.action=na.omit, main="acf(neg_ma_sim)")
+pacf(neg_ma_sim, na.action=na.omit, main="pacf(neg_ma_sim)")
+```
+
+### More complex autoregressive patterns
+
+ARIMA(2, 0, 0)
+
+* $Z_t = \phi_1 Z_{t-1} + \phi_2 Z_{t-2} + \epsilon_t$
+
+ARIMA(0, 0, 2)
+
+* $Z_t = \theta_2 \epsilon_{t-2} + \theta_1 \epsilon_{t-1} + \epsilon_t$
+
+ARMA(1, 0, 1)
+
+* $Z_t = \phi_1 Z_{t-1} + \theta_1 \epsilon_{t-1} + \epsilon_t$
+
+ARIMA(1, 1, 1)
+
+* $D_t = \phi_1 D_{t-1} + \theta_1 \epsilon_{t-1} + \epsilon_t$
+
 
 ### acf and pacf for co2 data
 
 ```{r co2-auto}
 par(mfrow=c(1, 2))
-acf(co2_d$random, na.action=na.omit)
-pacf(co2_d$random, na.action=na.omit)
+acf(co2_d$random, na.action=na.omit, main="acf(co2_d$random)")
+pacf(co2_d$random, na.action=na.omit, main="pacf(co2_d$random)")
 ```
 
 ### Structure of LakeHuron data
@@ -247,6 +354,8 @@ pacf(co2_d$random, na.action=na.omit)
 str(LakeHuron)
 attributes(LakeHuron)
 ```
+
+* Note: Annual data has no seasonality.
 
 ### Plot of LakeHuron data
 
@@ -262,6 +371,20 @@ acf(LakeHuron, na.action=na.omit)
 pacf(LakeHuron, na.action=na.omit)
 ```
 
+### Plot of LakeHuron data
+
+```{r diff-LakeHuron-plot}
+plot(diff(LakeHuron))
+```
+
+### acf and pacf for data
+
+```{r diff-LakeHuron-auto}
+par(mfrow=c(1, 2))
+acf(diff(LakeHuron), na.action=na.omit)
+pacf(diff(LakeHuron), na.action=na.omit)
+```
+
 ### Structure of mdeaths data
 
 ```{r mdeaths, echo=TRUE}
@@ -273,6 +396,21 @@ attributes(mdeaths)
 
 ```{r mdeaths-plot}
 plot(mdeaths)
+```
+
+### Detrend and deseasonalize mdeaths
+
+```{r mdeaths-decomp}
+mdeaths_d <- decompose(mdeaths)
+plot(mdeaths_d)
+```
+
+### acf and pacf for mdeaths data
+
+```{r mdeaths-auto}
+par(mfrow=c(1, 2))
+acf(mdeaths_d$random, na.action=na.omit, main="acf(mdeaths_d$random)")
+pacf(mdeaths_d$random, na.action=na.omit, main="pacf(mdeaths_d$random)")
 ```
 
 ### Structure of Nile data
@@ -288,6 +426,14 @@ attributes(Nile)
 plot(Nile)
 ```
 
+### acf and pacf for Nile data
+
+```{r Nile-auto}
+par(mfrow=c(1, 2))
+acf(Nile, na.action=na.omit, main="acf(Nile)")
+pacf(Nile, na.action=na.omit, main="pacf(Nile)")
+```
+
 ### Structure of nottem
 
 ```{r nottem, echo=TRUE}
@@ -299,6 +445,21 @@ attributes(nottem)
 
 ```{r nottem-plot}
 plot(nottem)
+```
+
+### Detrend and deseasonalize nottem
+
+```{r nottem-decomp}
+nottem_d <- decompose(nottem)
+plot(nottem_d)
+```
+
+### acf and pacf for nottem data
+
+```{r nottem-auto}
+par(mfrow=c(1, 2))
+acf(nottem_d$random, na.action=na.omit, main="acf(nottem_d$random)")
+pacf(nottem_d$random, na.action=na.omit, main="pacf(nottem_d$random)")
 ```
 
 ### Structure of sunspot.year
@@ -327,6 +488,22 @@ attributes(treering)
 plot(treering)
 ```
 
+### acf and pacf for treering data
+
+```{r treering-auto}
+par(mfrow=c(1, 2))
+acf(treering, na.action=na.omit, main="acf(treering)")
+pacf(treering, na.action=na.omit, main="pacf(treering)")
+```
+
+### acf and pacf for treering data
+
+```{r diff-treering-auto}
+par(mfrow=c(1, 2))
+acf(diff(treering), na.action=na.omit, main="acf(diff(treering))")
+pacf(diff(treering), na.action=na.omit, main="pacf(diff(treering))")
+```
+
 ### UKDriverDeaths
 
 ```{r UK, echo=TRUE}
@@ -334,10 +511,25 @@ str(UKDriverDeaths)
 attributes(UKDriverDeaths)
 ```
 
-### Plot UKDriver Deaths
+### Plot UKDriverDeaths
 
 ```{r UKDriverDeaths-plot}
 plot(UKDriverDeaths)
+```
+
+### Detrend and deseasonalize UKDriverDeaths
+
+```{r UKDriverDeaths-decomp}
+UKDriverDeaths_d <- decompose(UKDriverDeaths)
+plot(UKDriverDeaths_d)
+```
+
+### acf and pacf for UKDriverDeaths data
+
+```{r UKDriverDeaths-auto}
+par(mfrow=c(1, 2))
+acf(UKDriverDeaths_d$random, na.action=na.omit, main="acf(UKDriverDeaths_d$random)")
+pacf(UKDriverDeaths_d$random, na.action=na.omit, main="pacf(UKDriverDeaths_d$random)")
 ```
 
 ### USAccDeaths
@@ -353,10 +545,18 @@ attributes(USAccDeaths)
 plot(USAccDeaths)
 ```
 
-### arima.sim
+### Detrend and deseasonalize USAccDeaths
 
-```{r arima.sim}
-plot(arima.sim(n = 63, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
-          sd = sqrt(0.1796)))
+```{r USAccDeaths-decomp}
+USAccDeaths_d <- decompose(USAccDeaths)
+plot(USAccDeaths_d)
+```
+
+### acf and pacf for USAccDeaths data
+
+```{r USAccDeaths-auto}
+par(mfrow=c(1, 2))
+acf(USAccDeaths_d$random, na.action=na.omit, main="acf(USAccDeaths_d$random)")
+pacf(USAccDeaths_d$random, na.action=na.omit, main="pacf(USAccDeaths_d$random)")
 ```
 
