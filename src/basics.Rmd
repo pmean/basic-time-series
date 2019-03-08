@@ -21,26 +21,46 @@ knitr::opts_chunk$set(echo=FALSE)
   + Detrending and deseasonalizing
   + Basic Box-Jenkins models
   
-### White noise
+### Decomposing a time series
 
-```{r white-noise}
-set.seed(23571113)
-plot(rnorm(100), type="l")
-```
+* Additive decomposition
+  + Y - original data
+  + T - time trend
+  + S - seasonal component
+  + Z = random component
 
-### Correlation matrix
+$Y_t = T_t + S_t + Z_t$
 
-\[
- \begin{matrix}
-  1 & 0 & 0 & 0 & \cdots & 0 & 0 \\
-  0 & 1 & 0 & 0 & \cdots & 0 & 0 \\
-  0 & 0 & 1 & 0 & \cdots & 0 & 0 \\
-  0 & 0 & 0 & 1 & \cdots & 0 & 0 \\
-  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
-  0 & 0 & 0 & 0 & \cdots & 1 & 0 \\ 
-  0 & 0 & 0 & 0 & \cdots & 0 & 1 
- \end{matrix}
-\]
+* Multiplicative decomposition
+  + (or use a log transformation)
+
+$Y_t = T_t \times S_t \times Z_t$
+
+### Differencing
+
+An alternate way to remove a trend or deseasonalize a data set is through differencing.
+
+* Detrending
+
+$D_t = Y_t - Y_{t-1}$
+
+* Deseasonalizing (s=# of seasons)
+
+$D_t = Y_t - Y_{t-s}$
+
+### Models for the random component
+
+* White noise
+
+$Z_t = \epsilon_t$
+
+* Autoregressive (AR)
+
+$Z_t = \epsilon_t + \phi Z_{t-1}$
+
+* Moving average (MA)
+
+$Z_t = \epsilon_t+\theta \epsilon_{t-1}$
 
 
 
@@ -70,6 +90,8 @@ tmp <- dev.off()
 
 ![](../images/co2_1.png)
 
+
+
 ### Decomposition of co2
 
 ```{r co2-decomp, echo=TRUE}
@@ -82,6 +104,26 @@ str(co2_d)
 ```{r co2-decomp-plot}
 plot(co2_d)
 ```
+
+### Deseasonalizing co2
+
+```{r co2-deseasonal}
+plot(diff(co2, lag=12))
+```
+
+### Detrending co2
+
+```{r co2-detrend}
+plot(diff(co2, lag=1))
+```
+
+### Both Detrending  and deseasonalizing co2
+
+```{r co2-both}
+plot(diff(diff(co2, lag=12), lag=1))
+diff(diff(co2, lag=12), lag=1) - diff(diff(co2, lag=1), lag=12)
+```
+
 
 ### UKgas
 
@@ -108,6 +150,30 @@ str(UKgas_d)
 ```{r UKgas-decomp-plot}
 plot(UKgas_d)
 ```
+
+### White noise
+
+```{r white-noise}
+set.seed(23571113)
+plot(rnorm(100), type="l")
+```
+
+### Correlation matrix
+
+$Z_t = \epsilon_t$
+
+\[
+ \begin{matrix}
+  1 & 0 & 0 & 0 & \cdots & 0 & 0 \\
+  0 & 1 & 0 & 0 & \cdots & 0 & 0 \\
+  0 & 0 & 1 & 0 & \cdots & 0 & 0 \\
+  0 & 0 & 0 & 1 & \cdots & 0 & 0 \\
+  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+  0 & 0 & 0 & 0 & \cdots & 1 & 0 \\ 
+  0 & 0 & 0 & 0 & \cdots & 0 & 1 
+ \end{matrix}
+\]
+
 
 ### Autoregressive
 
