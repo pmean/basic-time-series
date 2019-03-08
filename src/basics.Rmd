@@ -25,8 +25,9 @@ r <- 0.5
   + Plotting
   + Detrending and deseasonalizing
   + Basic Box-Jenkins models
+* Lots more examples than I have time for
   
-### Decomposing a time series
+### Regression based decomposition
 
 * Additive decomposition
   + Y - original data
@@ -77,9 +78,13 @@ Moving average (MA)
 
 ### Structure
 
-The base R package has an object class, ts. You can specify three parameters: start, stop, and frequency. You do not need to place your data in a ts object before running time series analyses. 
+* The base R package has an object class, ts. 
+  + Three parameters: start, stop, and frequency.
+  + Not an absolute requirement for time series analyses. 
 
-There is a new class, tsibble, that I have not had a chance to work with. It is based on the principles of tidy data. Read the [tsibble vignette](https://cran.rstudio.com/web/packages/tsibble/vignettes/intro-tsibble.html) for more information.
+* New class, tsibble (not for today)
+  + Based on the principles of tidy data.
+  + Read the [tsibble vignette](https://cran.rstudio.com/web/packages/tsibble/vignettes/intro-tsibble.html).
 
 ### Structure of co2 data
 
@@ -107,24 +112,17 @@ str(co2_d)
 plot(co2_d)
 ```
 
-### Deseasonalizing co2
-
-```{r co2-deseasonal}
-plot(diff(co2, lag=12))
-```
-
 ### Detrending co2
 
 ```{r co2-detrend}
 plot(diff(co2, lag=1))
 ```
 
-### Both Detrending  and deseasonalizing co2
+### Detrending followed by deseasonalizing co2
 
 ```{r co2-both}
 plot(diff(diff(co2, lag=12), lag=1))
 ```
-
 
 ### UKgas
 
@@ -348,6 +346,118 @@ acf(co2_d$random, na.action=na.omit, main="acf(co2_d$random)")
 pacf(co2_d$random, na.action=na.omit, main="pacf(co2_d$random)")
 ```
 
+### Structure of Nile data
+
+```{r Nile, echo=TRUE}
+str(Nile)
+attributes(Nile)
+```
+
+### Plot of Nile data
+
+```{r Nile-plot}
+plot(Nile)
+```
+
+### acf and pacf for Nile data
+
+```{r Nile-auto}
+par(mfrow=c(1, 2))
+acf(Nile, na.action=na.omit, main="acf(Nile)")
+pacf(Nile, na.action=na.omit, main="pacf(Nile)")
+```
+
+### USAccDeaths
+
+```{r US, echo=TRUE}
+str(USAccDeaths)
+attributes(USAccDeaths)
+```
+
+### USAccDeaths plot
+
+```{r USAccDeaths-plot, echo=FALSE}
+plot(USAccDeaths)
+```
+
+### Detrend and deseasonalize USAccDeaths
+
+```{r USAccDeaths-decomp}
+USAccDeaths_d <- decompose(USAccDeaths)
+plot(USAccDeaths_d)
+```
+
+### acf and pacf for USAccDeaths data
+
+```{r USAccDeaths-auto}
+par(mfrow=c(1, 2))
+acf(USAccDeaths_d$random, na.action=na.omit, main="acf(USAccDeaths_d$random)")
+pacf(USAccDeaths_d$random, na.action=na.omit, main="pacf(USAccDeaths_d$random)")
+```
+
+### Structure of treering
+
+```{r treering, echo=TRUE}
+str(treering)
+attributes(treering)
+```
+
+### Plot of treering
+
+```{r treering-plot}
+plot(treering)
+```
+
+### acf and pacf for treering data
+
+```{r treering-auto}
+par(mfrow=c(1, 2))
+acf(treering, na.action=na.omit, main="acf(treering)")
+pacf(treering, na.action=na.omit, main="pacf(treering)")
+```
+
+### Difference plot of treering
+
+```{r diff-treering-plot}
+plot(diff(treering))
+```
+
+### Difference acf and pacf for treering data
+
+```{r diff-treering-auto}
+par(mfrow=c(1, 2))
+acf(diff(treering), na.action=na.omit, main="acf(diff(treering))")
+pacf(diff(treering), na.action=na.omit, main="pacf(diff(treering))")
+```
+
+### UKDriverDeaths
+
+```{r UK, echo=TRUE}
+str(UKDriverDeaths)
+attributes(UKDriverDeaths)
+```
+
+### Plot UKDriverDeaths
+
+```{r UKDriverDeaths-plot}
+plot(UKDriverDeaths)
+```
+
+### Detrend and deseasonalize UKDriverDeaths
+
+```{r UKDriverDeaths-decomp}
+UKDriverDeaths_d <- decompose(UKDriverDeaths)
+plot(UKDriverDeaths_d)
+```
+
+### acf and pacf for UKDriverDeaths data
+
+```{r UKDriverDeaths-auto}
+par(mfrow=c(1, 2))
+acf(UKDriverDeaths_d$random, na.action=na.omit, main="acf(UKDriverDeaths_d$random)")
+pacf(UKDriverDeaths_d$random, na.action=na.omit, main="pacf(UKDriverDeaths_d$random)")
+```
+
 ### Structure of LakeHuron data
 
 ```{r LakeHuron, echo=TRUE}
@@ -363,7 +473,7 @@ attributes(LakeHuron)
 plot(LakeHuron)
 ```
 
-### acf and pacf for data
+### acf and pacf for LakeHuron data
 
 ```{r LakeHuron-auto}
 par(mfrow=c(1, 2))
@@ -371,13 +481,13 @@ acf(LakeHuron, na.action=na.omit)
 pacf(LakeHuron, na.action=na.omit)
 ```
 
-### Plot of LakeHuron data
+### Difference plot of LakeHuron data
 
 ```{r diff-LakeHuron-plot}
 plot(diff(LakeHuron))
 ```
 
-### acf and pacf for data
+### Difference acf and pacf for LakeHuron data
 
 ```{r diff-LakeHuron-auto}
 par(mfrow=c(1, 2))
@@ -411,27 +521,6 @@ plot(mdeaths_d)
 par(mfrow=c(1, 2))
 acf(mdeaths_d$random, na.action=na.omit, main="acf(mdeaths_d$random)")
 pacf(mdeaths_d$random, na.action=na.omit, main="pacf(mdeaths_d$random)")
-```
-
-### Structure of Nile data
-
-```{r Nile, echo=TRUE}
-str(Nile)
-attributes(Nile)
-```
-
-### Plot of Nile data
-
-```{r Nile-plot}
-plot(Nile)
-```
-
-### acf and pacf for Nile data
-
-```{r Nile-auto}
-par(mfrow=c(1, 2))
-acf(Nile, na.action=na.omit, main="acf(Nile)")
-pacf(Nile, na.action=na.omit, main="pacf(Nile)")
 ```
 
 ### Structure of nottem
@@ -473,90 +562,5 @@ attributes(sunspot.year)
 
 ```{r sunspot-plot}
 plot(sunspot.year)
-```
-
-### Structure of treering
-
-```{r treering, echo=TRUE}
-str(treering)
-attributes(treering)
-```
-
-### Plot of treering
-
-```{r treering-plot}
-plot(treering)
-```
-
-### acf and pacf for treering data
-
-```{r treering-auto}
-par(mfrow=c(1, 2))
-acf(treering, na.action=na.omit, main="acf(treering)")
-pacf(treering, na.action=na.omit, main="pacf(treering)")
-```
-
-### acf and pacf for treering data
-
-```{r diff-treering-auto}
-par(mfrow=c(1, 2))
-acf(diff(treering), na.action=na.omit, main="acf(diff(treering))")
-pacf(diff(treering), na.action=na.omit, main="pacf(diff(treering))")
-```
-
-### UKDriverDeaths
-
-```{r UK, echo=TRUE}
-str(UKDriverDeaths)
-attributes(UKDriverDeaths)
-```
-
-### Plot UKDriverDeaths
-
-```{r UKDriverDeaths-plot}
-plot(UKDriverDeaths)
-```
-
-### Detrend and deseasonalize UKDriverDeaths
-
-```{r UKDriverDeaths-decomp}
-UKDriverDeaths_d <- decompose(UKDriverDeaths)
-plot(UKDriverDeaths_d)
-```
-
-### acf and pacf for UKDriverDeaths data
-
-```{r UKDriverDeaths-auto}
-par(mfrow=c(1, 2))
-acf(UKDriverDeaths_d$random, na.action=na.omit, main="acf(UKDriverDeaths_d$random)")
-pacf(UKDriverDeaths_d$random, na.action=na.omit, main="pacf(UKDriverDeaths_d$random)")
-```
-
-### USAccDeaths
-
-```{r US, echo=TRUE}
-str(USAccDeaths)
-attributes(USAccDeaths)
-```
-
-### USAccDeaths plot
-
-```{r USAccDeaths-plot, echo=FALSE}
-plot(USAccDeaths)
-```
-
-### Detrend and deseasonalize USAccDeaths
-
-```{r USAccDeaths-decomp}
-USAccDeaths_d <- decompose(USAccDeaths)
-plot(USAccDeaths_d)
-```
-
-### acf and pacf for USAccDeaths data
-
-```{r USAccDeaths-auto}
-par(mfrow=c(1, 2))
-acf(USAccDeaths_d$random, na.action=na.omit, main="acf(USAccDeaths_d$random)")
-pacf(USAccDeaths_d$random, na.action=na.omit, main="pacf(USAccDeaths_d$random)")
 ```
 
